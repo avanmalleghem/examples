@@ -8,8 +8,8 @@ use clap::Parser;
 #[command(long_about = None)]
 struct Args {
     /// Number of messages to publish
-    #[arg(short, long, default_value_t = u32::MAX)]
-    count: u32,
+    #[arg(short, long)]
+    count: Option<u32>,
 }
 
 fn main() -> Result<(), Error> {
@@ -26,7 +26,7 @@ fn main() -> Result<(), Error> {
 
     let mut publish_count: u32 = 1;
 
-    while context.ok() && publish_count <= args.count {
+    while context.ok() && args.count.map_or(true, |count| publish_count <= count) {
         message.data = format!("Hello, world! {}", publish_count);
         println!("Publishing: [{}]", message.data);
         publisher.publish(&message)?;
